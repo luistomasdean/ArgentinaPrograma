@@ -31,4 +31,13 @@ public class Cliente {
         Cliente cliente = (Cliente) o;
         return cuil == cliente.cuil;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "cuil=" + cuil +
+                ", razonSocial='" + razonSocial + '\'' +
+                ", mail='" + mail + '\'' +
+                '}';
+    }
 }

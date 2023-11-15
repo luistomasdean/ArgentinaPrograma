@@ -29,5 +29,9 @@ public class InicioPrograma {
         Incidente incidente2 = new Incidente(cliente2, "No me anda el windows ni el tago", listServ);
         MesaAyuda mesaAyuda2=new MesaAyuda(incidente2);
         mesaAyuda2.identificarCliente();
+
+
+
+
     }
 }
