@@ -1,0 +1,543 @@
+package dao;
+
+import entities.Cliente;
+
+import java.util.List;
+
+
+
+public interface ClienteDAO {
+    void agregarCliente(Cliente cliente);
+    Cliente obtenerCliente(long clienteId);
+    List<Cliente> obtenerTodosClientes();
+    void actualizarCliente(Cliente cliente);
+    void eliminarCliente(Cliente cliente);
+}
+package dao;
+
+
+
+import entities.Incidente;
+
+import java.util.List;
+
+public interface IncidenteDAO {
+    void agregarIncidente(Incidente incidente);
+    Incidente obtenerIncidente(long id);
+    List<Incidente> obtenerTodosIncidentes();
+    void actualizarIncidente(Incidente incidente);
+    void eliminarIncidente(Incidente incidente);
+}
+package dao;
+
+import entities.MesaDeAyuda;
+
+import java.util.List;
+
+public interface MesaDeAyudaDAO {
+    void agregarMesaDeAyuda(MesaDeAyuda mesaDeAyuda);
+    MesaDeAyuda obtenerMesaDeAyuda(long id);
+    List<MesaDeAyuda> obtenerTodasMesasDeAyuda();
+    void actualizarMesaDeAyuda(MesaDeAyuda mesaDeAyuda);
+    void eliminarMesaDeAyuda(MesaDeAyuda mesaDeAyuda);
+}package entities;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Cliente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String razonSocial;
+    private String cuit;
+
+    // Otros campos y relaciones según sea necesario
+}
+package entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+
+import java.util.Date;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Incidente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "tecnico_id")
+    private Tecnico tecnico;
+
+    @ManyToOne
+    @JoinColumn(name = "mesa_de_ayuda_id") // Asegúrate de que el nombre de la columna sea el correcto
+    private MesaDeAyuda mesaDeAyuda;
+
+    private String descripcion;
+    private String tipoProblema;
+    private String estado;
+    private Date fechaResolucion;
+
+    // Otros campos y relaciones según sea necesario
+}
+package entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class MesaDeAyuda {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+
+    @OneToMany(mappedBy = "mesaDeAyuda")
+    private List<Incidente> incidentes;
+
+
+
+    // Otros campos y relaciones según sea necesario
+}
+package entities;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Operador {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+
+    // Otros campos y relaciones según sea necesario
+}
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class RRHH {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+
+    @OneToMany(mappedBy = "rrhh")
+    private List<Tecnico> tecnicos;
+
+    // Otros campos y relaciones según sea necesario
+}
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Tecnico {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String especialidad;
+
+    @OneToMany(mappedBy = "tecnico")
+    private List<Incidente> incidentes;
+
+    @ManyToOne
+    @JoinColumn(name = "rrhh_id")
+    private RRHH rrhh;
+
+    // Otros campos y relaciones según sea necesario
+}
+package impl;
+
+import dao.ClienteDAO;
+import entities.Cliente;
+import java.util.Collections;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import util.HibernateUtil;
+
+import java.util.List;
+
+public class ClienteDAOImpl implements ClienteDAO {
+
+    @Override
+    public void agregarCliente(Cliente cliente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(cliente);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Cliente obtenerCliente(long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Cliente.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Cliente> obtenerTodosClientes() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Cliente", Cliente.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public void actualizarCliente(Cliente cliente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(cliente); // Utilizando merge() para actualizar
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void eliminarCliente(Cliente cliente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.remove(cliente); // Utilizando remove() en lugar de delete()
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+}
+package impl;
+
+import dao.IncidenteDAO;
+import entities.Incidente;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import util.HibernateUtil;
+
+import java.util.List;
+
+public class IncidenteDAOImpl implements IncidenteDAO {
+
+    @Override
+    public void agregarIncidente(Incidente incidente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(incidente);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Incidente obtenerIncidente(long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Incidente.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Incidente> obtenerTodosIncidentes() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Incidente", Incidente.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void actualizarIncidente(Incidente incidente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(incidente); // Utilizando merge() para actualizar
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void eliminarIncidente(Incidente incidente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.remove(incidente); // Utilizando remove() en lugar de delete()
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+}
+package impl;
+
+import dao.MesaDeAyudaDAO;
+import entities.MesaDeAyuda;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import util.HibernateUtil;
+
+import java.util.List;
+
+public class MesaDeAyudaDAOImpl implements MesaDeAyudaDAO {
+    @Override
+    public void agregarMesaDeAyuda(MesaDeAyuda mesaDeAyuda) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.save(mesaDeAyuda);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public MesaDeAyuda obtenerMesaDeAyuda(long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(MesaDeAyuda.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<MesaDeAyuda> obtenerTodasMesasDeAyuda() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM MesaDeAyuda", MesaDeAyuda.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void actualizarMesaDeAyuda(MesaDeAyuda mesaDeAyuda) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.update(mesaDeAyuda);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void eliminarMesaDeAyuda(MesaDeAyuda mesaDeAyuda) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.delete(mesaDeAyuda);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+}
+package org.example;
+
+import dao.ClienteDAO;
+import entities.Cliente;
+import impl.ClienteDAOImpl;
+
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // Prueba para Cliente
+        ClienteDAO clienteDAO = new ClienteDAOImpl();
+
+        // Agregar cliente
+        Cliente nuevoCliente = new Cliente();
+        nuevoCliente.setCuit("123456789");
+        nuevoCliente.setRazonSocial("Cliente de prueba");
+        clienteDAO.agregarCliente(nuevoCliente);
+
+        // Obtener cliente por ID
+        Cliente clienteRecuperado = clienteDAO.obtenerCliente(nuevoCliente.getId());
+
+        // Verificar si el clienteRecuperado es null antes de acceder a su id
+        if (clienteRecuperado != null) {
+            System.out.println("Cliente recuperado: " + clienteRecuperado);
+
+            // Actualizar cliente
+            clienteRecuperado.setRazonSocial("Nuevo Nombre Cliente");
+            clienteDAO.actualizarCliente(clienteRecuperado);
+
+            // Obtener todos los clientes
+            List<Cliente> todosLosClientes = clienteDAO.obtenerTodosClientes();
+            System.out.println("Todos los clientes: " + todosLosClientes);
+
+            // Eliminar cliente
+            clienteDAO.eliminarCliente(clienteRecuperado);
+
+            // Verificar que el cliente fue eliminado
+            Cliente clienteEliminado = clienteDAO.obtenerCliente(clienteRecuperado.getId());
+            System.out.println("Cliente después de eliminar: " + clienteEliminado);
+        } else {
+            System.out.println("Cliente no recuperado correctamente.");
+        }
+    }
+}
+package util;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+public class HibernateUtil {
+
+    private static final SessionFactory sessionFactory = buildSessionFactory();
+
+    private static SessionFactory buildSessionFactory() {
+        try {
+            // Crea el registro de servicios.
+            StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+                    .configure("hibernate.cfg.xml")
+                    .build();
+
+            // Configura las fuentes de metadatos.
+            Metadata metadata = new MetadataSources(standardRegistry)
+                    .getMetadataBuilder()
+                    .build();
+
+            // Crea la SessionFactory.
+            return metadata.getSessionFactoryBuilder().build();
+        } catch (Throwable ex) {
+            // En caso de fallo, imprime el mensaje de error.
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        // Cierra la caché y los pools de conexión.
+        getSessionFactory().close();
+    }
+}
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Configuración de la conexión a la base de datos -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/argentinaprograma?useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">root</property>
+
+        <!-- Dialecto de la base de datos -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Configuración para crear automáticamente las tablas -->
+        <property name="hibernate.hbm2ddl.auto">create</property>
+
+        <!-- Otras configuraciones de Hibernate -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Mapeo de clases -->
+        <mapping class="entities.Cliente"/>
+        <mapping class="entities.MesaDeAyuda"/>
+        <mapping class="entities.Tecnico"/>
+        <mapping class="entities.Operador"/>
+        <mapping class="entities.RRHH"/>
+        <mapping class="entities.Incidente"/>
+
+    </session-factory>
+</hibernate-configuration>
+
