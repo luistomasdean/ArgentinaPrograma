@@ -1,0 +1,70 @@
+@startuml
+enum entities.EstadoIncidente {
++  ABIERTO
++  EN_PROGRESO
++  DEMORADO
++  RESUELTO
+}
+class entities.Usuario {
+- int idUser
+- String dni
+- String password
+- String nombre
+- String apellido
+- int idRol
+- String email
+}
+class entities.Servicio {
+- int idServicio
+- String descripcionServicio
+}
+class entities.Rol {
+- int idRol
+- String descripcionRol
+- Permisos permisos
+}
+class entities.Problema {
+- int idProblema
+- int idIncidente
+- String descripcionProblema
+- int tiempoEsperadoMin
+- int tiempoMaximoMin
+}
+class entities.Main {
++ {static} void main(String[])
+}
+class entities.Incidente {
+- int idIncidente
+- int idUser
+- int idCliente
+- String descripcion
+- Date fechaAlta
+- Date fechaCierre
+- EstadoIncidente estado
+- int idServicio
+- Integer idTecnico
+- int tiempoResolucion
+- boolean esComplejo
+- String comentarios
+- boolean emailEnviado
+- Usuario usuario
+- Cliente cliente
+- Servicio servicio
+- Usuario tecnico
+}
+class entities.Permisos {
+- int idPermisos
+- boolean fullAccess
+- boolean rrhhAccess
+- boolean tecAccess
+- boolean asesorAccess
+- boolean comerAccess
+}
+class entities.Cliente {
+- int idCliente
+- int idUser
+- int cuit
+- String razonSocial
+- String email
+}
+@enduml
