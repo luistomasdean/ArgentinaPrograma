@@ -1,0 +1,16 @@
+
+o
+java:S2259N"MA "NullPointerException" could be thrown; "tecnicoObtenido" is nullable here.(ºçº·ùÿÿÿÿ8ÿÇŒÆ½1
+G	java:S106"+Replace this use of System.out by a logger.(Ò’¦8„ÈŒÆ½1
+L	java:S106$"+Replace this use of System.out by a logger.(º¤“Ïúÿÿÿÿ8…ÈŒÆ½1
+X	java:S125'"<This block of commented-out lines of code should be removed.(Èöæ8Òß¥Æ½1
+L	java:S106+"+Replace this use of System.out by a logger.(ˆø˜ìüÿÿÿÿ8…ÈŒÆ½1
+G	java:S106-"+Replace this use of System.out by a logger.( ŸÏÀ8…ÈŒÆ½1
+L	java:S106:"+Replace this use of System.out by a logger.(€ İËøÿÿÿÿ8‡ÈŒÆ½1
+L	java:S106@"+Replace this use of System.out by a logger.(¸º»Íüÿÿÿÿ8‡ÈŒÆ½1
+L	java:S106B"+Replace this use of System.out by a logger.(üª™Şıÿÿÿÿ8ˆÈŒÆ½1
+L	java:S106G"+Replace this use of System.out by a logger.(ñ«Ïúÿÿÿÿ8ˆÈŒÆ½1
+L	java:S106I"+Replace this use of System.out by a logger.(¤¸¤ûÿÿÿÿ8‰ÈŒÆ½1
+G	java:S106Q"+Replace this use of System.out by a logger.(ğ¼Û¼8‰ÈŒÆ½1
+G	java:S106V"+Replace this use of System.out by a logger.(›ú¢8‰ÈŒÆ½1
+X	java:S125U"<This block of commented-out lines of code should be removed.(¦›Õƒ8³ŞÆ½1
